@@ -1,0 +1,16 @@
+{
+    "namespace": "com.sas.kafka.aggrs.domain",
+    "type": "record",
+    "name": "AdditiveStatistics",
+     "fields": [
+         {"name": "count", "type": ["long", "null"], "default": 0.0},
+         {"name": "sum", "type": ["double", "null"], "default": 0.0},
+         {"name": "average", "type": ["double", "null"], "default": 0.0},
+         {"name": "min", "type": ["double", "null"], "default": 0.0},
+         {"name": "max", "type": ["double", "null"], "default": 0.0},
+         {"name": "M2", "type": ["double", "null"], "default": 0.0},
+         {"name": "variance", "type": ["double", "null"], "default": 0.0},
+         {"name": "stddev", "type": ["double", "null"], "default": 0.0},
+         {"name": "transDate", "type": ["long", "null"], "logicalType": "date", "default": 0.0}
+     ]
+}

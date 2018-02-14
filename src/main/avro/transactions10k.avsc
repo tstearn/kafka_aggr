@@ -1,0 +1,15 @@
+{
+    "namespace": "com.sas.kafkaaggr.domain",
+    "type": "record",
+    "name": "Transactions10K",
+     "fields": [
+         {"name": "accountNumber", "type": "string"},
+         {"name": "accountTypeDesc", "type": "string"},
+         {"name": "partyNumber", "type": "string"},
+         {"name": "primaryMediumDesc", "type": "string"},
+         {"name": "secondaryMediumDesc", "type": "string"},
+         {"name": "transactionKey", "type": "string"},
+         {"name": "currencyAmount",  "type": ["double", "null"], "default": 0.0},
+         {"name": "transDate", "type": "long", "logicalType": "date"}
+     ]
+}

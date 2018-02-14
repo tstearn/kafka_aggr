@@ -1,0 +1,71 @@
+group 'kafka'
+version '1.0-SNAPSHOT'
+
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://packages.confluent.io/maven/"
+    }
+    maven {
+        url 'https://repository.jboss.org/nexus/content/groups/public/'
+    }
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+	maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${versions_springBoot}"
+        classpath "io.spring.gradle:dependency-management-plugin:${versions_dependency_management_plugin}"
+        // Avro plugins
+        classpath "com.commercehub.gradle.plugin:gradle-avro-plugin:0.9.0"
+
+    }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: "io.spring.dependency-management"
+apply plugin: 'org.springframework.boot'
+
+
+// Avro code generation for schema files
+apply plugin: 'com.commercehub.gradle.plugin.avro'
+avro {
+    fieldVisibility = "PRIVATE"
+}
+
+dependencies {
+
+    compile "org.springframework.boot:spring-boot:${versions_springBoot}"
+    compile "org.springframework.boot:spring-boot-autoconfigure:${versions_springBoot}"
+    compile "org.springframework.boot:spring-boot-starter:${versions_springBoot}"
+    compile group: 'org.apache.kafka', name: 'kafka-clients', version: '0.10.2.1'
+    compile group: 'org.apache.kafka', name: 'kafka-streams', version: '0.10.2.1'
+    compile(group: 'org.apache.kafka', name: 'kafka_2.11', version: '0.10.2.1'){
+        exclude module: 'log4j'
+        exclude module: 'slf4j-log4j12'
+    }
+    compile group: 'org.apache.avro', name: 'avro', version: '1.8.2'
+
+    compile "org.freemarker:freemarker:2.3.26-incubating"
+    compile "org.python:jython-standalone:2.7.0"
+    compile "org.codehaus.groovy:groovy:2.4.11"
+    compile "org.apache-extras.beanshell:bsh:2.0b6"
+
+    compile group: 'io.confluent', name: 'kafka-avro-serializer', version: '3.2.2'
+    compile 'org.codehaus.groovy:groovy-all:2.4.10'
+    compile group: 'org.postgresql', name: 'postgresql', version: '9.4-1200-jdbc41'
+
+
+
+
+//    testCompile group: 'org.apache.avro', name: 'avro-tools', version: '1.8.2'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

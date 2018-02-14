@@ -1,0 +1,16 @@
+{
+    "namespace": "com.sas.kafka.aggr.domain",
+    "type": "record",
+    "name": "Transactions10KEnhanced",
+     "fields": [
+         {"name": "accountNumber", "type": ["string","null"], "default": ""},
+         {"name": "accountTypeDesc", "type": ["string","null"], "default": ""},
+         {"name": "partyNumber", "type": ["string","null"], "default": ""},
+         {"name": "primaryMediumDesc", "type": ["string","null"], "default": ""},
+         {"name": "secondaryMediumDesc", "type": ["string","null"], "default": ""},
+         {"name": "transactionKey", "type": ["string","null"], "default": ""},
+         {"name": "currencyAmount",  "type": ["double", "null"], "default": 0.0},
+         {"name": "transDate", "type": ["long","null"], "default": 0.0, "logicalType": "date"},
+         {"name": "sum2d", "type": ["double", "null"], "default": 0.0}
+     ]
+}
