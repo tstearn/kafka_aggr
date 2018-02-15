@@ -17,8 +17,8 @@ public class ProjectExecutor implements Runnable{
     private Project project;
     private Properties streamsConfig;
     private KafkaStreams streams;
-    AggregateGroupStoresUpdater storesUpdater;
-    AggregateAppender appender;
+    private AggregateGroupStoresUpdater storesUpdater;
+    private AggregateAppender appender;
 
     public ProjectExecutor(Project project) {
         this.project = project;
