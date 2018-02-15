@@ -1,23 +1,19 @@
-package com.sas.kafka.aggrs.domain;
+package com.sas.kafka.aggrs.engine;
 
-
-import com.sas.kafkaaggr.domain.Transactions10K;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.sas.kafka.aggrs.project.Project;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.streams.processor.TimestampExtractor;
 
-public class Transactions10TimestampExtractor implements TimestampExtractor{
-    public Transactions10TimestampExtractor() {
-        int x = 0;
-    }
-
+public class EventTimeStampExtractor implements TimestampExtractor {
     @Override
     public long extract(ConsumerRecord<Object, Object> record, long previousTimestamp) {
         long timestamp = -1;
 
-        if(record.value() instanceof Transactions10K) {
-            Transactions10K myPojo = (Transactions10K)record.value();
-            if (myPojo != null) {
-                timestamp = myPojo.getTransDate();
+        if(record.value() instanceof JsonNode) {
+            JsonNode event = (JsonNode) record.value();
+            if (event != null) {
+                timestamp = event.get(Project.EVENT_DATE_FIELD).asLong();
             }
         }
         else {

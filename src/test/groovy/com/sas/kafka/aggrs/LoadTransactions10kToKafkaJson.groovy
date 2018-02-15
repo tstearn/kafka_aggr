@@ -1,37 +1,41 @@
+package com.sas.kafka.aggrs
+
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.sas.kafka.aggrs.Constants
-import com.sas.kafka.aggrs.domain.Transactions10TimestampExtractor
+import com.sas.kafka.aggrs.engine.EventTimeStampExtractor
 import groovy.sql.Sql
-import io.confluent.kafka.serializers.KafkaAvroSerializer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
-import com.sas.kafkaaggr.domain.Transactions10K
+import org.apache.kafka.connect.json.JsonSerializer
 import org.apache.kafka.streams.StreamsConfig
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
-class LoadTransactions10kToKafka {
+class LoadTransactions10kToKafkaJson {
 
     static void main(String[] args) {
         final long FOUR_HOURS_MILLI = 4 * 60*60;
-        String topic = "transactions10k"
+        String topic = "transactions10kJson"
         Properties properties = new Properties();
         properties.put("bootstrap.servers", Constants.KAFKA_BROKER);
         properties.put("acks", "1");
         properties.put("schema.registry.url", Constants.SCHEMA_REGISTRY_URL);
         properties.put("key.serializer", StringSerializer.class.getName());
-        properties.put("value.serializer", KafkaAvroSerializer.class.getName());
-        properties.put(StreamsConfig.TIMESTAMP_EXTRACTOR_CLASS_CONFIG, Transactions10TimestampExtractor.class);
+        properties.put("value.serializer", JsonSerializer.class.getName());
+        properties.put(StreamsConfig.TIMESTAMP_EXTRACTOR_CLASS_CONFIG, EventTimeStampExtractor.class);
 
-        Producer producer = new KafkaProducer<String, Transactions10K>(properties);
+        Producer producer = new KafkaProducer<String, JsonNode>(properties);
+        ObjectMapper mapper = new ObjectMapper();
 
         Sql db = Sql.newInstance("jdbc:postgresql://pass1465.na.sas.com:5432/acme",
-                                 "dbmsowner",
-                                 "Go4thsas",
-                                 "org.postgresql.Driver")
+                "dbmsowner",
+                "Go4thsas",
+                "org.postgresql.Driver")
         String query = """select date_key, 
                                  account_number, 
                                  account_type_desc, 
@@ -49,16 +53,9 @@ class LoadTransactions10kToKafka {
         df.setTimeZone(tz);
         try {
             db.eachRow(query,  {
-                //Convert date to UTC time setting ahead 4 hours
-                Transactions10K row = new Transactions10K(transDate: it.date_key.getTime() - TimeUnit.HOURS.toMillis(4),
-                                                          accountNumber: it.account_number,
-                                                          accountTypeDesc: it.account_type_desc,
-                                                          partyNumber: it.party_number,
-                                                          primaryMediumDesc: it.primary_medium_desc,
-                                                          secondaryMediumDesc: it.secondary_medium_desc,
-                                                          currencyAmount: it.currency_amount,
-                                                          transactionKey: it.transaction_key)
-                ProducerRecord record = new ProducerRecord(topic,row.partyNumber,row)
+                Map<String,Object> rowMap = rowToMap(it)
+                JsonNode rowJson = mapper.valueToTree(rowMap);
+                ProducerRecord record = new ProducerRecord(topic,rowMap.partyNumber,rowJson)
                 producer.send(record, { metadata, exception ->
                     if(metadata) {
                         println "partition: ${metadata.partition()}, offset:  ${metadata.offset()}"
@@ -69,5 +66,19 @@ class LoadTransactions10kToKafka {
         finally {
             producer.close()
         }
+    }
+
+    static Map<String,Object> rowToMap(row) {
+        Map<String,Object> outMap = [:]
+        outMap.__eventDate =  row.date_key.getTime() - TimeUnit.HOURS.toMillis(4)
+        outMap.accountNumber = row.account_number
+        outMap.accountTypeDesc = row.account_type_desc
+        outMap.partyNumber = row.party_number
+        outMap.primaryMediumDesc = row.primary_medium_desc
+        outMap.secondaryMediumDesc = row.secondary_medium_desc
+        outMap.currencyAmount = row.currency_amount
+        outMap.transactionKey = row.transaction_key
+
+        return outMap
     }
 }

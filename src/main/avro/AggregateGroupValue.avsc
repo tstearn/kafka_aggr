@@ -1,0 +1,9 @@
+{
+    "namespace": "com.sas.kafka.aggrs.domain",
+    "type": "record",
+    "name": "AggregateGroupValue",
+    "fields": [
+        {"name": "entries", "type": ["null", {"type": "map", "values": ["null","com.sas.kafka.aggrs.domain.AdditiveStatistics"]}], "default": null}
+    ]
+}
+

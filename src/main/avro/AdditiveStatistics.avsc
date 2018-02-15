@@ -3,7 +3,7 @@
     "type": "record",
     "name": "AdditiveStatistics",
      "fields": [
-         {"name": "count", "type": ["long", "null"], "default": 0.0},
+         {"name": "count", "type": ["double", "null"], "default": 0.0},
          {"name": "sum", "type": ["double", "null"], "default": 0.0},
          {"name": "average", "type": ["double", "null"], "default": 0.0},
          {"name": "min", "type": ["double", "null"], "default": 0.0},

@@ -21,7 +21,7 @@ public class AdditiveStatsUtil{
     }
 
     private static void initializeAccumulator(AdditiveStatistics accumulator) {
-        accumulator.setCount(0L);
+        accumulator.setCount(0.0);
         accumulator.setSum(0.0);
         accumulator.setMin(0.0);
         accumulator.setMax(0.0);
